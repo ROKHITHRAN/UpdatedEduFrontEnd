@@ -71,10 +71,17 @@ class ApiService {
   }
 
   // Quiz endpoints
-  async generateQuiz(docId: string, numQuestions: number = 5) {
+  async generateQuiz(docId: string, numQuestions: number, quiz_type: string) {
+    const payload =
+      quiz_type === "MCQ"
+        ? { document_id: docId, mcq: numQuestions }
+        : quiz_type === "SHORT"
+          ? { document_id: docId, short: numQuestions }
+          : { document_id: docId, long: numQuestions };
+
     return this.request("/quiz/create", {
       method: "POST",
-      body: JSON.stringify({ document_id: docId, mcq: numQuestions }),
+      body: JSON.stringify(payload),
     });
   }
 

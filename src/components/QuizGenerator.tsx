@@ -19,6 +19,7 @@ export const QuizGenerator = ({ document }: QuizGeneratorProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  console.log(quizType);
 
   useEffect(() => {
     loadQuizzes();
@@ -38,8 +39,10 @@ export const QuizGenerator = ({ document }: QuizGeneratorProps) => {
         generatedDate: q.created_at || new Date().toISOString(),
         status: q.status,
       }));
-      const sortedQuizzes = transformedQuizzes.sort((a: any, b: any) => 
-        new Date(b.generatedDate).getTime() - new Date(a.generatedDate).getTime()
+      const sortedQuizzes = transformedQuizzes.sort(
+        (a: any, b: any) =>
+          new Date(b.generatedDate).getTime() -
+          new Date(a.generatedDate).getTime(),
       );
       setQuizzes(sortedQuizzes);
     } catch (error) {
@@ -56,6 +59,7 @@ export const QuizGenerator = ({ document }: QuizGeneratorProps) => {
       const response = await apiService.generateQuiz(
         document.id,
         numberOfQuestions,
+        quizType,
       );
       console.log("Comp", response);
 
@@ -165,60 +169,65 @@ export const QuizGenerator = ({ document }: QuizGeneratorProps) => {
             Generated Quizzes
           </h3>
           <div className="space-y-4">
-            {quizzes.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((quiz) => (
-              <div
-                key={quiz.id}
-                className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-full">
-                        {quiz.type === "mcq"
-                          ? "Multiple Choice"
-                          : quiz.type === "short"
-                            ? "Short Answer"
-                            : "Long Answer"}
-                      </span>
-                      <span className="px-3 py-1 bg-purple-100 text-purple-700 text-sm font-medium rounded-full capitalize">
-                        {quiz.difficulty}
-                      </span>
+            {quizzes
+              .slice(
+                (currentPage - 1) * itemsPerPage,
+                currentPage * itemsPerPage,
+              )
+              .map((quiz) => (
+                <div
+                  key={quiz.id}
+                  className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-full">
+                          {quiz.type === "mcq"
+                            ? "Multiple Choice"
+                            : quiz.type === "short"
+                              ? "Short Answer"
+                              : "Long Answer"}
+                        </span>
+                        <span className="px-3 py-1 bg-purple-100 text-purple-700 text-sm font-medium rounded-full capitalize">
+                          {quiz.difficulty}
+                        </span>
+                      </div>
+                      <p className="text-gray-900 font-medium">
+                        {quiz.numberOfQuestions} Questions
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Generated on{" "}
+                        {new Date(quiz.generatedDate).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          },
+                        )}
+                      </p>
                     </div>
-                    <p className="text-gray-900 font-medium">
-                      {quiz.numberOfQuestions} Questions
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Generated on{" "}
-                      {new Date(quiz.generatedDate).toLocaleDateString(
-                        "en-US",
-                        {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        },
-                      )}
-                    </p>
-                  </div>
 
-                  <button
-                    onClick={() => setSelectedQuiz(quiz)}
-                    className="px-6 py-3 bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-lg font-medium hover:from-green-600 hover:to-teal-700 transition-all shadow-lg hover:shadow-xl flex items-center space-x-2"
-                  >
-                    <Play className="w-5 h-5" />
-                    <span>
-                      {quiz.status === "RETAKE" ? "Retake Quiz" : "Take Quiz"}
-                    </span>
-                  </button>
+                    <button
+                      onClick={() => setSelectedQuiz(quiz)}
+                      className="px-6 py-3 bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-lg font-medium hover:from-green-600 hover:to-teal-700 transition-all shadow-lg hover:shadow-xl flex items-center space-x-2"
+                    >
+                      <Play className="w-5 h-5" />
+                      <span>
+                        {quiz.status === "RETAKE" ? "Retake Quiz" : "Take Quiz"}
+                      </span>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
           {quizzes.length > itemsPerPage && (
             <div className="flex items-center justify-center space-x-4 mt-6">
               <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
                 className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
               >
@@ -229,8 +238,14 @@ export const QuizGenerator = ({ document }: QuizGeneratorProps) => {
                 Page {currentPage} of {Math.ceil(quizzes.length / itemsPerPage)}
               </span>
               <button
-                onClick={() => setCurrentPage(p => Math.min(Math.ceil(quizzes.length / itemsPerPage), p + 1))}
-                disabled={currentPage === Math.ceil(quizzes.length / itemsPerPage)}
+                onClick={() =>
+                  setCurrentPage((p) =>
+                    Math.min(Math.ceil(quizzes.length / itemsPerPage), p + 1),
+                  )
+                }
+                disabled={
+                  currentPage === Math.ceil(quizzes.length / itemsPerPage)
+                }
                 className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
               >
                 <span>Next</span>
