@@ -57,18 +57,16 @@ export const QuizTake = ({
         // SHORT - call evaluate API
         evaluation = await apiService.evaluateShortAnswer(
           documentId,
-          quiz.id,
+          quiz.quiz_id || quiz.id,
           currentQuestion.question_id,
           selectedAnswer,
         );
         evaluation.user_answer = selectedAnswer;
       } else if (isLong) {
         // LONG - call evaluate API
-        console.log(quiz);
-
         evaluation = await apiService.evaluateLongAnswer(
           documentId,
-          quiz.id,
+          quiz.quiz_id || quiz.id,
           currentQuestion.question_id,
           selectedAnswer,
         );
@@ -100,25 +98,30 @@ export const QuizTake = ({
         (sum, e) => sum + (e.score || 0),
         0,
       );
-      const userAnswers: any = {};
-      const feedback: any = {};
-      const referencePages: any = {};
 
-      allEvaluations.forEach((e, index) => {
-        userAnswers[e.question_id] = e.user_answer || "";
-        feedback[e.question_id] = e.remarks || "";
-        referencePages[e.question_id] = e.reference_pages || [];
+      const questionsData = questions.map((q: any, index: number) => {
+        const evaluation = allEvaluations[index];
+        return {
+          question_id: q.question_id,
+          type: q.type,
+          question: q.question,
+          options: q.options,
+          correct_answer: q.correct_answer,
+          reference_pages: q.reference_pages || [],
+          user_answer: evaluation.user_answer || "",
+          is_correct: evaluation.score === evaluation.max_score,
+          score: evaluation.score,
+          feedback: evaluation.remarks || "",
+        };
       });
 
       await apiService.submitQuiz({
         attempt_id: `attempt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        quiz_id: quiz.id,
+        quiz_id: quiz.quiz_id || quiz.id,
         document_id: documentId,
         document_name: quiz.document_name || "Document",
-        user_answers: userAnswers,
+        questions: questionsData,
         score: totalScore,
-        feedback: feedback,
-        reference_pages: referencePages,
         attempt_date: new Date().toISOString(),
       });
     } catch (error) {
@@ -132,7 +135,7 @@ export const QuizTake = ({
   };
 
   const calculateMaxScore = () => {
-    return evaluations.reduce((sum, e) => sum + (e.max_score || 1), 0);
+    return evaluations.length * evaluations[0].max_score;
   };
 
   if (showResults) {
