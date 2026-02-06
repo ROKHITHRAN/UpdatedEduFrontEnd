@@ -176,10 +176,12 @@ export const QuizTake = ({
                 className="bg-white rounded-xl border border-gray-200 p-6"
               >
                 <div className="flex items-start space-x-3 mb-4">
-                  {isCorrect ? (
-                    <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                  ) : (
-                    <XCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
+                  {q.type === "MCQ" && (
+                    isCorrect ? (
+                      <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                    ) : (
+                      <XCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
+                    )
                   )}
                   <div className="flex-1">
                     <p className="font-semibold text-gray-900 mb-3">

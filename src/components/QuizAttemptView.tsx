@@ -128,10 +128,12 @@ export const QuizAttemptView = ({ quiz, onBack }: QuizAttemptViewProps) => {
                     {index + 1}
                   </span>
                   <p className="flex-1 font-medium text-gray-900">{question.question}</p>
-                  {evaluation.isCorrect ? (
-                    <CheckCircle className="w-6 h-6 text-green-600" />
-                  ) : (
-                    <XCircle className="w-6 h-6 text-red-600" />
+                  {question.type === 'mcq' && (
+                    evaluation.isCorrect ? (
+                      <CheckCircle className="w-6 h-6 text-green-600" />
+                    ) : (
+                      <XCircle className="w-6 h-6 text-red-600" />
+                    )
                   )}
                 </div>
 

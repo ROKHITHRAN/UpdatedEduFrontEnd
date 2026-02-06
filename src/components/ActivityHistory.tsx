@@ -109,7 +109,7 @@ export const ActivityHistory = ({ documentId }: ActivityHistoryProps) => {
                 <p className="font-semibold text-gray-900 flex-1">
                   {index + 1}. {q.question}
                 </p>
-                {q.is_correct !== null && (
+                {q.options && q.is_correct !== null && (
                   q.is_correct ? 
                     <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0 ml-2" /> : 
                     <XCircle className="w-6 h-6 text-red-500 flex-shrink-0 ml-2" />
@@ -139,10 +139,18 @@ export const ActivityHistory = ({ documentId }: ActivityHistoryProps) => {
               )}
 
               {!q.options && (
-                <div className="mb-3">
-                  <p className="text-sm font-medium text-gray-700 mb-1">Your Answer:</p>
-                  <p className="text-gray-900 bg-gray-50 p-3 rounded-lg">{q.user_answer}</p>
-                </div>
+                <>
+                  <div className="mb-3">
+                    <p className="text-sm font-medium text-gray-700 mb-1">Your Answer:</p>
+                    <p className="text-gray-900 bg-gray-50 p-3 rounded-lg">{q.user_answer}</p>
+                  </div>
+                  {q.score !== undefined && (
+                    <div className="mb-3">
+                      <p className="text-sm font-medium text-gray-700 mb-1">Score:</p>
+                      <p className="text-lg font-bold text-blue-600">{q.score}</p>
+                    </div>
+                  )}
+                </>
               )}
 
               {q.feedback && (
