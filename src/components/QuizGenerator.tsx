@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Sparkles, Play } from "lucide-react";
+import { Sparkles, Play, ChevronLeft, ChevronRight } from "lucide-react";
 import { Document, Quiz } from "../types";
 import { apiService } from "../services/api";
 import { QuizTake } from "./QuizTake";
@@ -17,6 +17,8 @@ export const QuizGenerator = ({ document }: QuizGeneratorProps) => {
     "medium",
   );
   const [isGenerating, setIsGenerating] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     loadQuizzes();
@@ -36,7 +38,10 @@ export const QuizGenerator = ({ document }: QuizGeneratorProps) => {
         generatedDate: q.created_at || new Date().toISOString(),
         status: q.status,
       }));
-      setQuizzes(transformedQuizzes);
+      const sortedQuizzes = transformedQuizzes.sort((a: any, b: any) => 
+        new Date(b.generatedDate).getTime() - new Date(a.generatedDate).getTime()
+      );
+      setQuizzes(sortedQuizzes);
     } catch (error) {
       console.error("Failed to load quizzes:", error);
     }
@@ -160,7 +165,7 @@ export const QuizGenerator = ({ document }: QuizGeneratorProps) => {
             Generated Quizzes
           </h3>
           <div className="space-y-4">
-            {quizzes.map((quiz) => (
+            {quizzes.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((quiz) => (
               <div
                 key={quiz.id}
                 className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all"
@@ -210,6 +215,29 @@ export const QuizGenerator = ({ document }: QuizGeneratorProps) => {
               </div>
             ))}
           </div>
+          {quizzes.length > itemsPerPage && (
+            <div className="flex items-center justify-center space-x-4 mt-6">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span>Previous</span>
+              </button>
+              <span className="text-sm text-gray-600">
+                Page {currentPage} of {Math.ceil(quizzes.length / itemsPerPage)}
+              </span>
+              <button
+                onClick={() => setCurrentPage(p => Math.min(Math.ceil(quizzes.length / itemsPerPage), p + 1))}
+                disabled={currentPage === Math.ceil(quizzes.length / itemsPerPage)}
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+              >
+                <span>Next</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
