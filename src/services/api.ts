@@ -73,9 +73,9 @@ class ApiService {
   // Quiz endpoints
   async generateQuiz(docId: string, numQuestions: number, quiz_type: string) {
     const payload =
-      quiz_type === "MCQ"
+      quiz_type.toUpperCase() === "MCQ"
         ? { document_id: docId, mcq: numQuestions }
-        : quiz_type === "SHORT"
+        : quiz_type.toUpperCase() === "SHORT"
           ? { document_id: docId, short: numQuestions }
           : { document_id: docId, long: numQuestions };
 
@@ -128,8 +128,6 @@ class ApiService {
   }
 
   async submitQuiz(payload: any) {
-    console.log(payload);
-
     return this.request("/quiz/submit", {
       method: "POST",
       body: JSON.stringify(payload),

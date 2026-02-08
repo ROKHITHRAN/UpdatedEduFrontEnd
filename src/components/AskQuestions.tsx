@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Send, User, Bot } from 'lucide-react';
-import { Document, Question } from '../types';
-import { apiService } from '../services/api';
+import { useState, useEffect } from "react";
+import { Send, User, Bot } from "lucide-react";
+import { Document, Question } from "../types";
+import { apiService } from "../services/api";
+import HTMLRenderer from "../utils/HTMLRenderer";
 
 interface AskQuestionsProps {
   document: Document;
@@ -9,14 +10,16 @@ interface AskQuestionsProps {
 
 export const AskQuestions = ({ document }: AskQuestionsProps) => {
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Load questions from local storage for now
     // TODO: Implement API endpoint for getting questions by document
-    const allQuestions = JSON.parse(localStorage.getItem('questions') || '[]');
-    const docQuestions = allQuestions.filter((q: Question) => q.documentId === document.id);
+    const allQuestions = JSON.parse(localStorage.getItem("questions") || "[]");
+    const docQuestions = allQuestions.filter(
+      (q: Question) => q.documentId === document.id,
+    );
     setQuestions(docQuestions);
   }, [document.id]);
 
@@ -25,7 +28,7 @@ export const AskQuestions = ({ document }: AskQuestionsProps) => {
     if (!inputValue.trim()) return;
 
     const userQuestion = inputValue.trim();
-    setInputValue('');
+    setInputValue("");
     setIsLoading(true);
 
     try {
@@ -36,21 +39,25 @@ export const AskQuestions = ({ document }: AskQuestionsProps) => {
         question: userQuestion,
         answer: response.answer || response.message,
         timestamp: new Date().toISOString(),
+        pages: response.pages,
       };
 
       // Save to local storage for now
-      const allQuestions = JSON.parse(localStorage.getItem('questions') || '[]');
+      const allQuestions = JSON.parse(
+        localStorage.getItem("questions") || "[]",
+      );
       allQuestions.push(newQuestion);
-      localStorage.setItem('questions', JSON.stringify(allQuestions));
+      localStorage.setItem("questions", JSON.stringify(allQuestions));
 
       setQuestions([...questions, newQuestion]);
     } catch (error) {
-      console.error('Failed to get answer:', error);
-      alert('Failed to get answer. Please try again.');
+      console.error("Failed to get answer:", error);
+      alert("Failed to get answer. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
+  console.log(questions);
 
   return (
     <div className="flex flex-col h-[600px]">
@@ -84,14 +91,17 @@ export const AskQuestions = ({ document }: AskQuestionsProps) => {
               <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-green-400 to-teal-500 rounded-full flex items-center justify-center">
                 <Bot className="w-5 h-5 text-white" />
               </div>
-              <div className="flex-1 bg-white border border-gray-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-sm">
-                <p className="text-gray-900">{q.answer}</p>
-                <p className="text-xs text-gray-500 mt-2">
-                  {new Date(q.timestamp).toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </p>
+              <div className="flex-1  bg-white border border-gray-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-sm">
+                <HTMLRenderer answer={q.answer} />
+                <div className="flex justify-between text-xs text-gray-500 mt-2">
+                  <p>
+                    {new Date(q.timestamp).toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                  <p>{`Ref Page : ${q.pages.map((pg) => pg)}`}</p>
+                </div>
               </div>
             </div>
           </div>
@@ -105,8 +115,14 @@ export const AskQuestions = ({ document }: AskQuestionsProps) => {
             <div className="flex-1 bg-white border border-gray-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-sm">
               <div className="flex space-x-2">
                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                <div
+                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                  style={{ animationDelay: "0.2s" }}
+                ></div>
+                <div
+                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                  style={{ animationDelay: "0.4s" }}
+                ></div>
               </div>
             </div>
           </div>

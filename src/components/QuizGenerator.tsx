@@ -19,7 +19,7 @@ export const QuizGenerator = ({ document }: QuizGeneratorProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-  console.log(quizType);
+  // console.log(quizType);
 
   useEffect(() => {
     loadQuizzes();
@@ -55,6 +55,7 @@ export const QuizGenerator = ({ document }: QuizGeneratorProps) => {
 
     try {
       console.log("Clicked");
+      console.log(quizType);
 
       const response = await apiService.generateQuiz(
         document.id,

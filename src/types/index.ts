@@ -17,22 +17,23 @@ export interface Question {
   question: string;
   answer: string;
   timestamp: string;
+  pages: number[];
 }
 
 export interface QuizQuestion {
   id: string;
   question: string;
-  type: 'mcq' | 'short' | 'long';
+  type: "mcq" | "short" | "long";
   options?: string[];
-  correctAnswer?: string;
+  correct_answer?: string;
 }
 
 export interface Quiz {
   id: string;
   documentId: string;
   documentName: string;
-  type: 'mcq' | 'short' | 'long';
-  difficulty: 'easy' | 'medium' | 'hard';
+  type: "mcq" | "short" | "long";
+  difficulty: "easy" | "medium" | "hard";
   numberOfQuestions: number;
   questions: QuizQuestion[];
   generatedDate: string;
@@ -49,7 +50,7 @@ export interface QuizAttempt {
   attemptDate: string;
 }
 
-export type ActivityType = 'question' | 'quiz_generated' | 'quiz_attempted';
+export type ActivityType = "question" | "quiz_generated" | "quiz_attempted";
 
 export interface Activity {
   id: string;

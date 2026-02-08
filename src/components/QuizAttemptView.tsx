@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
-import { Quiz, QuizAttempt } from '../types';
-import { storage } from '../utils/storage';
-import { evaluateQuizAnswer } from '../utils/mockAI';
+import { useState } from "react";
+import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
+import { Quiz, QuizAttempt } from "../types";
+import { storage } from "../utils/storage";
+import { evaluateQuizAnswer } from "../utils/mockAI";
 
 interface QuizAttemptViewProps {
   quiz: Quiz;
@@ -42,15 +42,18 @@ export const QuizAttemptView = ({ quiz, onBack }: QuizAttemptViewProps) => {
     const feedback: { [questionId: string]: string } = {};
 
     quiz.questions.forEach((question) => {
-      const userAnswer = answers[question.id] || '';
+      const userAnswer = answers[question.id] || "";
       const evaluation = evaluateQuizAnswer(question, userAnswer);
       feedback[question.id] = evaluation.feedback;
       if (evaluation.isCorrect) {
         totalScore++;
       }
     });
+    console.log("Quiz:", quiz);
 
-    const percentageScore = Math.round((totalScore / quiz.questions.length) * 100);
+    const percentageScore = Math.round(
+      (totalScore / quiz.questions.length) * 100,
+    );
 
     const attempt: QuizAttempt = {
       id: `attempt_${Date.now()}`,
@@ -68,7 +71,7 @@ export const QuizAttemptView = ({ quiz, onBack }: QuizAttemptViewProps) => {
       id: `activity_${Date.now()}`,
       documentId: quiz.documentId,
       documentName: quiz.documentName,
-      type: 'quiz_attempted',
+      type: "quiz_attempted",
       timestamp: new Date().toISOString(),
       metadata: {
         score: percentageScore,
@@ -78,6 +81,7 @@ export const QuizAttemptView = ({ quiz, onBack }: QuizAttemptViewProps) => {
     setResults(attempt);
     setIsSubmitted(true);
   };
+  console.log();
 
   if (isSubmitted && results) {
     return (
@@ -91,9 +95,11 @@ export const QuizAttemptView = ({ quiz, onBack }: QuizAttemptViewProps) => {
         </button>
 
         <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 border border-blue-200 text-center">
-          <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full mb-4 ${
-            results.score >= 70 ? 'bg-green-100' : 'bg-orange-100'
-          }`}>
+          <div
+            className={`inline-flex items-center justify-center w-20 h-20 rounded-full mb-4 ${
+              results.score >= 70 ? "bg-green-100" : "bg-orange-100"
+            }`}
+          >
             {results.score >= 70 ? (
               <CheckCircle className="w-10 h-10 text-green-600" />
             ) : (
@@ -104,17 +110,20 @@ export const QuizAttemptView = ({ quiz, onBack }: QuizAttemptViewProps) => {
             Quiz Complete!
           </h2>
           <p className="text-xl text-gray-700 mb-4">
-            Your Score: <span className="font-bold text-blue-600">{results.score}%</span>
+            Your Score:{" "}
+            <span className="font-bold text-blue-600">{results.score}%</span>
           </p>
           <p className="text-gray-600">
-            You got {Math.round((results.score / 100) * quiz.questions.length)} out of {quiz.questions.length} questions correct
+            You got {Math.round((results.score / 100) * quiz.questions.length)}{" "}
+            out of {quiz.questions.length} questions correct
           </p>
         </div>
 
         <div className="space-y-4">
           <h3 className="text-xl font-bold text-gray-900">Detailed Feedback</h3>
           {quiz.questions.map((question, index) => {
-            const userAnswer = results.userAnswers[question.id] || 'No answer provided';
+            const userAnswer =
+              results.userAnswers[question.id] || "No answer provided";
             const feedback = results.feedback[question.id];
             const evaluation = evaluateQuizAnswer(question, userAnswer);
 
@@ -127,35 +136,50 @@ export const QuizAttemptView = ({ quiz, onBack }: QuizAttemptViewProps) => {
                   <span className="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold">
                     {index + 1}
                   </span>
-                  <p className="flex-1 font-medium text-gray-900">{question.question}</p>
-                  {question.type === 'mcq' && (
-                    evaluation.isCorrect ? (
+                  <p className="flex-1 font-medium text-gray-900">
+                    {question.question}
+                  </p>
+                  {question.type === "mcq" &&
+                    (evaluation.isCorrect ? (
                       <CheckCircle className="w-6 h-6 text-green-600" />
                     ) : (
                       <XCircle className="w-6 h-6 text-red-600" />
-                    )
-                  )}
+                    ))}
                 </div>
 
                 <div className="ml-11 space-y-3">
                   <div>
-                    <p className="text-sm font-medium text-gray-700 mb-1">Your Answer:</p>
-                    <p className="text-gray-900 bg-gray-50 rounded-lg p-3">{userAnswer}</p>
+                    <p className="text-sm font-medium text-gray-700 mb-1">
+                      Your Answer:
+                    </p>
+                    <p className="text-gray-900 bg-gray-50 rounded-lg p-3">
+                      {userAnswer}
+                    </p>
                   </div>
-
-                  {question.correctAnswer && (
+                  <div>Hlo</div>
+                  {question.correct_answer?.length != 0 && (
                     <div>
-                      <p className="text-sm font-medium text-gray-700 mb-1">Expected Answer:</p>
-                      <p className="text-gray-900 bg-green-50 rounded-lg p-3">{question.correctAnswer}</p>
+                      <p className="text-sm font-medium text-gray-700 mb-1">
+                        Expected Answer:
+                      </p>
+                      <p className="text-gray-900 bg-green-50 rounded-lg p-3">
+                        {question.correct_answer}
+                      </p>
                     </div>
                   )}
 
-                  <div className={`rounded-lg p-3 ${
-                    evaluation.isCorrect ? 'bg-green-50' : 'bg-orange-50'
-                  }`}>
-                    <p className={`text-sm font-medium ${
-                      evaluation.isCorrect ? 'text-green-800' : 'text-orange-800'
-                    }`}>
+                  <div
+                    className={`rounded-lg p-3 ${
+                      evaluation.isCorrect ? "bg-green-50" : "bg-orange-50"
+                    }`}
+                  >
+                    <p
+                      className={`text-sm font-medium ${
+                        evaluation.isCorrect
+                          ? "text-green-800"
+                          : "text-orange-800"
+                      }`}
+                    >
                       {feedback}
                     </p>
                   </div>
@@ -184,29 +208,36 @@ export const QuizAttemptView = ({ quiz, onBack }: QuizAttemptViewProps) => {
             Question {currentQuestionIndex + 1} of {quiz.questions.length}
           </span>
           <span className="text-sm font-medium text-blue-600">
-            {Math.round(((currentQuestionIndex + 1) / quiz.questions.length) * 100)}% Complete
+            {Math.round(
+              ((currentQuestionIndex + 1) / quiz.questions.length) * 100,
+            )}
+            % Complete
           </span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div
             className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full transition-all"
-            style={{ width: `${((currentQuestionIndex + 1) / quiz.questions.length) * 100}%` }}
+            style={{
+              width: `${((currentQuestionIndex + 1) / quiz.questions.length) * 100}%`,
+            }}
           />
         </div>
       </div>
 
       <div className="bg-white border border-gray-200 rounded-xl p-8">
-        <h3 className="text-xl font-bold text-gray-900 mb-6">{currentQuestion.question}</h3>
+        <h3 className="text-xl font-bold text-gray-900 mb-6">
+          {currentQuestion.question}
+        </h3>
 
-        {currentQuestion.type === 'mcq' && currentQuestion.options && (
+        {currentQuestion.type === "mcq" && currentQuestion.options && (
           <div className="space-y-3">
             {currentQuestion.options.map((option, index) => (
               <label
                 key={index}
                 className={`block p-4 border-2 rounded-lg cursor-pointer transition-all ${
                   answers[currentQuestion.id] === option
-                    ? 'border-blue-600 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    ? "border-blue-600 bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                 }`}
               >
                 <input
@@ -223,9 +254,9 @@ export const QuizAttemptView = ({ quiz, onBack }: QuizAttemptViewProps) => {
           </div>
         )}
 
-        {currentQuestion.type === 'short' && (
+        {currentQuestion.type === "short" && (
           <textarea
-            value={answers[currentQuestion.id] || ''}
+            value={answers[currentQuestion.id] || ""}
             onChange={(e) => handleAnswerChange(e.target.value)}
             placeholder="Type your answer here..."
             rows={4}
@@ -233,9 +264,9 @@ export const QuizAttemptView = ({ quiz, onBack }: QuizAttemptViewProps) => {
           />
         )}
 
-        {currentQuestion.type === 'long' && (
+        {currentQuestion.type === "long" && (
           <textarea
-            value={answers[currentQuestion.id] || ''}
+            value={answers[currentQuestion.id] || ""}
             onChange={(e) => handleAnswerChange(e.target.value)}
             placeholder="Type your detailed answer here..."
             rows={8}

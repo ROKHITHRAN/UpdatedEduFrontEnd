@@ -176,13 +176,12 @@ export const QuizTake = ({
                 className="bg-white rounded-xl border border-gray-200 p-6"
               >
                 <div className="flex items-start space-x-3 mb-4">
-                  {q.type === "MCQ" && (
-                    isCorrect ? (
+                  {q.type === "MCQ" &&
+                    (isCorrect ? (
                       <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
                     ) : (
                       <XCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
-                    )
-                  )}
+                    ))}
                   <div className="flex-1">
                     <p className="font-semibold text-gray-900 mb-3">
                       {index + 1}. {q.question}
@@ -206,13 +205,23 @@ export const QuizTake = ({
                       </p>
                     </div>
 
-                    {evaluation?.remarks && (
+                    {evaluation?.remarks && !isMCQ && (
                       <div className="mb-3">
                         <p className="text-sm font-medium text-gray-700 mb-1">
                           Feedback:
                         </p>
                         <p className="text-gray-700 bg-blue-50 p-3 rounded-lg">
                           {evaluation.remarks}
+                        </p>
+                      </div>
+                    )}
+                    {isMCQ && (
+                      <div className="mb-3">
+                        <p className="text-sm font-medium text-gray-700 mb-1">
+                          Correct Answer
+                        </p>
+                        <p className="text-gray-700 bg-blue-50 p-3 rounded-lg">
+                          {q.correct_answer}
                         </p>
                       </div>
                     )}
