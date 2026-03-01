@@ -133,6 +133,23 @@ class ApiService {
       body: JSON.stringify(payload),
     });
   }
+  // Website endpoints
+  async embedWebsite(url: string) {
+    return this.request("/website/embed", {
+      method: "POST",
+      body: JSON.stringify({ url }),
+    });
+  }
+
+  async askWebsiteQuestion(websiteId: string, question: string) {
+    return this.request("/website/ask", {
+      method: "POST",
+      body: JSON.stringify({
+        website_id: websiteId,
+        question,
+      }),
+    });
+  }
 }
 
 export const apiService = new ApiService();

@@ -1,9 +1,9 @@
-import { BookOpen, LogOut, Library } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { BookOpen, LogOut, Library } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
 
 interface HeaderProps {
-  currentView: 'library' | 'document';
-  onNavigate: (view: 'library') => void;
+  currentView: "library" | "document" | "webscrap";
+  onNavigate: (view: "library" | "webscrap") => void;
 }
 
 export const Header = ({ currentView, onNavigate }: HeaderProps) => {
@@ -25,15 +25,28 @@ export const Header = ({ currentView, onNavigate }: HeaderProps) => {
 
             <nav className="flex space-x-1">
               <button
-                onClick={() => onNavigate('library')}
+                onClick={() => onNavigate("library")}
                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                  currentView === 'library' || currentView === 'document'
-                    ? 'bg-blue-50 text-blue-700'
-                    : 'text-gray-600 hover:bg-gray-50'
+                  currentView === "library" || currentView === "document"
+                    ? "bg-blue-50 text-blue-700"
+                    : "text-gray-600 hover:bg-gray-50"
                 }`}
               >
                 <Library className="w-4 h-4" />
                 <span>Library</span>
+              </button>
+            </nav>
+            <nav className="flex space-x-1">
+              <button
+                onClick={() => onNavigate("webscrap")}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                  currentView === "webscrap"
+                    ? "bg-blue-50 text-blue-700"
+                    : "text-gray-600 hover:bg-gray-50"
+                }`}
+              >
+                <Library className="w-4 h-4" />
+                <span>WebScrap</span>
               </button>
             </nav>
           </div>
